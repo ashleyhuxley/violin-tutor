@@ -21,6 +21,7 @@ namespace ElectricFox.ViolinTutor.Ui
             RendererFactory.RegisterRenderer(new BarSeparatorRenderer());
             RendererFactory.RegisterRenderer(new PlayableNoteRenderer());
             RendererFactory.RegisterRenderer(new RestRenderer());
+            RendererFactory.RegisterRenderer(new ClefRenderer());
 
             FillKeySigs();
 
@@ -28,6 +29,8 @@ namespace ElectricFox.ViolinTutor.Ui
             player.PlayingItemChanged += Player_PlayingItemChanged;
 
             melody = new Melody("New Melody", 80);
+            melody.Items.Add(new Clef());
+            melody.Items.Add(new TimeSignature(4, 4));
         }
 
         private void Player_PlayingItemChanged()
@@ -112,7 +115,7 @@ namespace ElectricFox.ViolinTutor.Ui
 
                     var isInKey = melody.KeySignature.IsContained(note);
                     var isSelected = melody.Items.OfType<PlayableNote>().Any(n => n.IsSelected && n.Note == note);
-                    
+
                     var playingNote = player.PlayingItem as PlayableNote;
                     var isPlaying = playingNote is not null && playingNote.Note == note;
 
@@ -196,38 +199,48 @@ namespace ElectricFox.ViolinTutor.Ui
 
         private void StaveBoxPaint(object sender, PaintEventArgs e)
         {
-            const int offset = 30;
-
             var width = staveBox.Width - (Constants.StaveMargin * 2);
 
             int x = Constants.StaveMargin + 10;
-            int y = Constants.StaveMargin + offset;
+            int y = Constants.StaveMargin - 50;
 
             // Stave Lines
-            for (int i = 0; i < 5; i++)
-            {
-                int iy = y + (i * Constants.StaveSpacing);
-                e.Graphics.DrawLine(Assets.StaveLine, Constants.StaveMargin, iy, width + Constants.StaveMargin, iy);
-            }
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    int iy = y + (i * Constants.StaveSpacing);
+            //    e.Graphics.DrawLine(Assets.StaveLine, Constants.StaveMargin, iy, width + Constants.StaveMargin, iy);
+            //}
 
-            // Draw treble clef
-            var clefRenderer = new ClefRenderer();
-            var clefRect = clefRenderer.Render(e.Graphics, new Point(x, Constants.StaveMargin + 15));
-            x += clefRect.Width + Constants.ItemSpacing;
+            //// Draw treble clef
+            //var clefRenderer = new ClefRenderer();
+            //var clefRect = clefRenderer.Render(e.Graphics, new Point(x, Constants.StaveMargin + 15));
+            //x += clefRect.Width + Constants.ItemSpacing;
 
-            // Draw Key Signature
-            var keyRenderer = new KeySignatureRenderer();
-            var keyRect = keyRenderer.Render(e.Graphics, new Point(x, y), melody.KeySignature, melody);
-            x += keyRect.Width + Constants.ItemSpacing;
+            //// Draw Key Signature
+            //var keyRenderer = new KeySignatureRenderer();
+            //var keyRect = keyRenderer.Render(e.Graphics, new Point(x, y), melody.KeySignature, melody);
+            //x += keyRect.Width + Constants.ItemSpacing;
 
-            // Draw time signature
-            var tsRenderer = new TimeSignatureRenderer();
-            var timeSigRect = tsRenderer.Render(e.Graphics, new Point(x, y), melody.TimeSignature, melody);
-            x += timeSigRect.Width + Constants.ItemSpacing;
+            //// Draw time signature
+            //var tsRenderer = new TimeSignatureRenderer();
+            //var timeSigRect = tsRenderer.Render(e.Graphics, new Point(x, y), melody.TimeSignature, melody);
+            //x += timeSigRect.Width + Constants.ItemSpacing;
 
             // Notation Items
             foreach (var item in melody.Items)
             {
+                if (item is Clef)
+                {
+                    x = Constants.StaveMargin + 10;
+                    y += Constants.StaveSpacing * 5 + 50;
+
+                    for (int i = 0; i < 5; i++)
+                    {
+                        int iy = y + (i * Constants.StaveSpacing);
+                        e.Graphics.DrawLine(Assets.StaveLine, Constants.StaveMargin, iy, width + Constants.StaveMargin, iy);
+                    }
+                }
+
                 var renderer = RendererFactory.GetRenderer(item);
                 var rect = renderer.Render(e.Graphics, new Point(x, y), item, melody);
                 melody.Bounds[item] = rect;
@@ -417,6 +430,12 @@ namespace ElectricFox.ViolinTutor.Ui
                 selectedNote.Length = length;
             }
 
+            RefreshView();
+        }
+
+        private void NewLineButtonClick(object sender, EventArgs e)
+        {
+            this.melody.Items.Add(new Clef());
             RefreshView();
         }
     }

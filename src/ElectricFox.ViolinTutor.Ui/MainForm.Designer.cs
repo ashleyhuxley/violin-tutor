@@ -36,6 +36,7 @@ namespace ElectricFox.ViolinTutor.Ui
             staveBox = new PictureBox();
             tempoSlider = new TrackBar();
             panel1 = new Panel();
+            newLineButton = new Button();
             restSisteenth = new Button();
             restEighth = new Button();
             restQuarter = new Button();
@@ -83,8 +84,8 @@ namespace ElectricFox.ViolinTutor.Ui
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(staveBox);
-            splitContainer1.Size = new Size(1278, 634);
-            splitContainer1.SplitterDistance = 418;
+            splitContainer1.Size = new Size(1420, 634);
+            splitContainer1.SplitterDistance = 464;
             splitContainer1.TabIndex = 1;
             // 
             // violinLayout
@@ -93,7 +94,7 @@ namespace ElectricFox.ViolinTutor.Ui
             violinLayout.Dock = DockStyle.Fill;
             violinLayout.Location = new Point(0, 0);
             violinLayout.Name = "violinLayout";
-            violinLayout.Size = new Size(418, 634);
+            violinLayout.Size = new Size(464, 634);
             violinLayout.TabIndex = 1;
             violinLayout.TabStop = false;
             violinLayout.Paint += ViolinLayoutPaint;
@@ -103,10 +104,10 @@ namespace ElectricFox.ViolinTutor.Ui
             // staveBox
             // 
             staveBox.BackColor = Color.White;
-            staveBox.Dock = DockStyle.Top;
+            staveBox.Dock = DockStyle.Fill;
             staveBox.Location = new Point(0, 0);
             staveBox.Name = "staveBox";
-            staveBox.Size = new Size(856, 227);
+            staveBox.Size = new Size(952, 634);
             staveBox.TabIndex = 0;
             staveBox.TabStop = false;
             staveBox.Paint += StaveBoxPaint;
@@ -116,7 +117,7 @@ namespace ElectricFox.ViolinTutor.Ui
             // tempoSlider
             // 
             tempoSlider.LargeChange = 10;
-            tempoSlider.Location = new Point(998, 3);
+            tempoSlider.Location = new Point(1070, 3);
             tempoSlider.Maximum = 300;
             tempoSlider.Minimum = 1;
             tempoSlider.Name = "tempoSlider";
@@ -128,6 +129,7 @@ namespace ElectricFox.ViolinTutor.Ui
             // 
             // panel1
             // 
+            panel1.Controls.Add(newLineButton);
             panel1.Controls.Add(restSisteenth);
             panel1.Controls.Add(restEighth);
             panel1.Controls.Add(restQuarter);
@@ -154,8 +156,18 @@ namespace ElectricFox.ViolinTutor.Ui
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1278, 54);
+            panel1.Size = new Size(1420, 54);
             panel1.TabIndex = 2;
+            // 
+            // newLineButton
+            // 
+            newLineButton.Location = new Point(677, 12);
+            newLineButton.Name = "newLineButton";
+            newLineButton.Size = new Size(32, 32);
+            newLineButton.TabIndex = 22;
+            newLineButton.Tag = "0.0625";
+            newLineButton.UseVisualStyleBackColor = true;
+            newLineButton.Click += NewLineButtonClick;
             // 
             // restSisteenth
             // 
@@ -215,7 +227,7 @@ namespace ElectricFox.ViolinTutor.Ui
             // timSignatureButton
             // 
             timSignatureButton.Image = (Image)resources.GetObject("timSignatureButton.Image");
-            timSignatureButton.Location = new Point(945, 12);
+            timSignatureButton.Location = new Point(1017, 12);
             timSignatureButton.Name = "timSignatureButton";
             timSignatureButton.Size = new Size(32, 32);
             timSignatureButton.TabIndex = 16;
@@ -224,7 +236,7 @@ namespace ElectricFox.ViolinTutor.Ui
             // stopButton
             // 
             stopButton.Image = (Image)resources.GetObject("stopButton.Image");
-            stopButton.Location = new Point(907, 12);
+            stopButton.Location = new Point(979, 12);
             stopButton.Name = "stopButton";
             stopButton.Size = new Size(32, 32);
             stopButton.TabIndex = 15;
@@ -234,7 +246,7 @@ namespace ElectricFox.ViolinTutor.Ui
             // playButton
             // 
             playButton.Image = (Image)resources.GetObject("playButton.Image");
-            playButton.Location = new Point(869, 12);
+            playButton.Location = new Point(941, 12);
             playButton.Name = "playButton";
             playButton.Size = new Size(32, 32);
             playButton.TabIndex = 14;
@@ -254,7 +266,7 @@ namespace ElectricFox.ViolinTutor.Ui
             // keyLabel
             // 
             keyLabel.AutoSize = true;
-            keyLabel.Location = new Point(682, 21);
+            keyLabel.Location = new Point(754, 21);
             keyLabel.Name = "keyLabel";
             keyLabel.Size = new Size(29, 15);
             keyLabel.TabIndex = 12;
@@ -264,7 +276,7 @@ namespace ElectricFox.ViolinTutor.Ui
             // 
             keyDropDown.DropDownStyle = ComboBoxStyle.DropDownList;
             keyDropDown.FormattingEnabled = true;
-            keyDropDown.Location = new Point(726, 18);
+            keyDropDown.Location = new Point(798, 18);
             keyDropDown.Name = "keyDropDown";
             keyDropDown.Size = new Size(121, 23);
             keyDropDown.TabIndex = 11;
@@ -398,7 +410,7 @@ namespace ElectricFox.ViolinTutor.Ui
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1278, 688);
+            ClientSize = new Size(1420, 688);
             Controls.Add(panel1);
             Controls.Add(splitContainer1);
             KeyPreview = true;
@@ -449,5 +461,6 @@ namespace ElectricFox.ViolinTutor.Ui
         private Button restWhole;
         private Button restSisteenth;
         private Button restEighth;
+        private Button newLineButton;
     }
 }

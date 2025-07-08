@@ -1,14 +1,17 @@
-﻿using ElectricFox.ViolinTutor.Code;
+﻿using System.Reflection;
+using ElectricFox.ViolinTutor.Code;
 
 namespace ElectricFox.ViolinTutor.Ui.Rendering
 {
-    public class ClefRenderer
+    public class ClefRenderer : IRenderer<Clef>
     {
-        public Rectangle Render(Graphics g, Point p)
+        public Rectangle Render(Graphics g, Point p, Clef item, Melody melody)
         {
             Size size;
 
-            using (var image = Image.FromFile("D:\\code\\me\\violin-tutor\\treble-clef.png"))
+            var assembly = Assembly.GetExecutingAssembly();
+            using (var stream = assembly.GetManifestResourceStream("ElectricFox.ViolinTutor.Ui.Resources.treble-clef.png"))
+            using (var image = Image.FromStream(stream))
             {
                 g.DrawImage(image, p);
                 g.ResetTransform();
