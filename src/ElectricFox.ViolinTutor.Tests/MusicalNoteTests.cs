@@ -56,7 +56,7 @@ namespace ElectricFox.ViolinTutor.Tests
         public void MusicalNote_FromValue_IsSequential()
         {
             var abs = 0;
-            var note = MusicalNote.FromValue(abs);
+            var note = MusicalNote.FromValue(abs)[0];
 
             while (note.AbsoluteValue < 108)
             {

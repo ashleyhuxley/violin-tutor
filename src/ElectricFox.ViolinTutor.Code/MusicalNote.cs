@@ -4,20 +4,25 @@ namespace ElectricFox.ViolinTutor.Code
 {
     public class MusicalNote
     {
-        private static List<(NoteValue, Accidental)> baseValues = new()
+        private static Dictionary<(NoteValue, Accidental), int> baseValues = new()
         {
-            (NoteValue.C, Accidental.Neutral), // 3: C
-            (NoteValue.C, Accidental.Sharp),   // 4: C#
-            (NoteValue.D, Accidental.Neutral), // 5: D
-            (NoteValue.D, Accidental.Sharp),   // 6: D#
-            (NoteValue.E, Accidental.Neutral), // 7: E
-            (NoteValue.F, Accidental.Neutral), // 8: F
-            (NoteValue.F, Accidental.Sharp),   // 9: F#
-            (NoteValue.G, Accidental.Neutral), // 10: G
-            (NoteValue.G, Accidental.Sharp),    // 11: G#
-            (NoteValue.A, Accidental.Neutral), // 0: A
-            (NoteValue.A, Accidental.Sharp),   // 1: A#
-            (NoteValue.B, Accidental.Neutral), // 2: B
+            { (NoteValue.C, Accidental.Neutral), 0 },
+            {(NoteValue.C, Accidental.Sharp), 1 },
+            {(NoteValue.D, Accidental.Flat), 1 },
+            {(NoteValue.D, Accidental.Neutral), 2 },
+            {(NoteValue.D, Accidental.Sharp), 3 },
+            {(NoteValue.E, Accidental.Flat), 3 },
+            {(NoteValue.E, Accidental.Neutral), 4 },
+            {(NoteValue.F, Accidental.Neutral),5 },
+            {(NoteValue.F, Accidental.Sharp), 6 },
+            {(NoteValue.G, Accidental.Flat), 6 },
+            {(NoteValue.G, Accidental.Neutral), 7 },
+            {(NoteValue.G, Accidental.Sharp), 8 },
+            {(NoteValue.A, Accidental.Flat), 8 },
+            {(NoteValue.A, Accidental.Neutral), 9 },
+            {(NoteValue.A, Accidental.Sharp), 10 },
+            {(NoteValue.B, Accidental.Flat), 10 },
+            {(NoteValue.B, Accidental.Neutral), 11 },
         };
 
         public MusicalNote()
@@ -101,7 +106,7 @@ namespace ElectricFox.ViolinTutor.Code
         {
             get
             {
-                var baseValue = baseValues.IndexOf((Value, Accidental));
+                var baseValue = baseValues[(Value, Accidental)];
                 return (Octave * 12) + baseValue;
             }
         }
@@ -109,7 +114,7 @@ namespace ElectricFox.ViolinTutor.Code
         [JsonIgnore]
         public int StavePosition => (Octave * 7) + (int)Value;
 
-        public static MusicalNote FromValue(int absoluteValue)
+        public static MusicalNote[] FromValue(int absoluteValue)
         {
             int octave = absoluteValue / 12;
             int baseValue = absoluteValue % 12;
@@ -118,15 +123,18 @@ namespace ElectricFox.ViolinTutor.Code
             if (baseValue < 0) baseValue += 12;
 
             // Look up the corresponding note
-            var (value, accidental) = baseValues[baseValue];
-
-            // Create and return the musical note
-            return new MusicalNote
+            var values = baseValues.Where(b => b.Value == baseValue);
+            if (!values.Any())
             {
-                Value = value,
+                throw new ArgumentOutOfRangeException(nameof(absoluteValue), "Absolute value is out of range for musical notes.");
+            }
+
+            return values.Select(v => new MusicalNote
+            {
+                Value = v.Key.Item1,
                 Octave = octave,
-                Accidental = accidental
-            };
+                Accidental = v.Key.Item2
+            }).ToArray();
         }
 
         public override bool Equals(object? obj) => obj is MusicalNote other && Equals(other);
@@ -134,13 +142,13 @@ namespace ElectricFox.ViolinTutor.Code
         public override int GetHashCode() => AbsoluteValue.GetHashCode();
 
         public static MusicalNote operator +(MusicalNote a, int b)
-            => FromValue(a.AbsoluteValue + b);
+            => FromValue(a.AbsoluteValue + b)[0];
         public static MusicalNote operator -(MusicalNote a, int b)
-            => FromValue(a.AbsoluteValue - b);
+            => FromValue(a.AbsoluteValue - b)[0];
         public static MusicalNote operator ++(MusicalNote a)
-            => FromValue(a.AbsoluteValue + 1);
+            => FromValue(a.AbsoluteValue + 1)[0];
         public static MusicalNote operator --(MusicalNote a)
-            => FromValue(a.AbsoluteValue - 1);
+            => FromValue(a.AbsoluteValue - 1)[0];
         public static bool operator ==(MusicalNote a, MusicalNote b)
             => a?.Name == b?.Name && a?.Octave == b?.Octave;
         public static bool operator !=(MusicalNote a, MusicalNote b)
