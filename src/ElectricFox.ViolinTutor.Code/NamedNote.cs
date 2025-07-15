@@ -4,7 +4,7 @@ namespace ElectricFox.ViolinTutor.Code
 {
     public class NamedNote
     {
-        public MusicalNote Note { get; private set; }
+        public MusicalNote MusicalNote { get; private set; }
 
         public NoteValue Value { get; set; }
         public Accidental Accidental { get; set; }
@@ -26,13 +26,18 @@ namespace ElectricFox.ViolinTutor.Code
             }
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public NamedNote(NoteValue value, Accidental accidental, int octave)
         {
             this.Value = value;
             this.Accidental = accidental;
             this.Octave = octave;
 
-            Note = new MusicalNote(value, accidental, octave);
+            MusicalNote = new MusicalNote(value, accidental, octave);
         }
 
         public NamedNote(string name, int octave)
@@ -67,7 +72,7 @@ namespace ElectricFox.ViolinTutor.Code
             }
 
             this.Octave = octave;
-            Note = new MusicalNote(Value, Accidental, Octave);
+            MusicalNote = new MusicalNote(Value, Accidental, Octave);
         }
 
         [JsonIgnore]

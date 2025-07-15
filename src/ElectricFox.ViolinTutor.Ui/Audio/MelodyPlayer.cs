@@ -84,7 +84,7 @@ namespace ElectricFox.ViolinTutor.Ui.Audio
                     }
                     else if (item is PlayableNote note)
                     {
-                        waveProvider.SetWave(note.Note.Frequency, 0.5f);
+                        waveProvider.SetWave(note.NamedNote.MusicalNote.Frequency, 0.5f);
 
                         outputDevice.Play();
                         WaitForCancellation(lengthMs - 50, token);

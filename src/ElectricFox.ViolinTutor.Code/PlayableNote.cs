@@ -4,13 +4,13 @@ namespace ElectricFox.ViolinTutor.Code
 {
     public sealed class PlayableNote : NotationItem, IPlayable
     {
-        public PlayableNote(MusicalNote note, decimal length)
+        public PlayableNote(NamedNote note, decimal length)
         {
-            Note = note;
+            NamedNote = note;
             Length = length;
         }
 
-        public MusicalNote Note { get; set; }
+        public NamedNote NamedNote { get; set; }
 
         public decimal Length { get; set; }
 

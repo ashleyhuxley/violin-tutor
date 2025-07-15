@@ -11,7 +11,7 @@ namespace ElectricFox.ViolinTutor.Ui
 
         private readonly MelodyPlayer player;
 
-        private List<Tuple<Rectangle, MusicalNote>> violinPositions = new();
+        private List<Tuple<Rectangle, NamedNote>> violinPositions = new();
 
         public MainForm()
         {
@@ -108,20 +108,24 @@ namespace ElectricFox.ViolinTutor.Ui
                 // Note Circles
                 for (int fingers = 0; fingers < 8; fingers++)
                 {
-                    var note = GetNote(x, fingers);
+                    int absoluteValue = 43 + (x * 7) + fingers;
+
+                    //var note = GetNote(x, fingers);
+                    var baseNote = MusicalNote.FromAbsoluteValue(absoluteValue);
+                    var note = baseNote.GetNoteInKey(melody.KeySignature);
 
                     var posY = margin + (fingerSpace * fingers) + fingerSpacing;
                     var radius = Math.Min((totalStringWidth / 2) - 10, fingerSpacing - 10);
 
                     var isInKey = melody.KeySignature.IsContained(note);
-                    var isSelected = melody.Items.OfType<PlayableNote>().Any(n => n.IsSelected && n.Note == note.Note);
+                    var isSelected = melody.Items.OfType<PlayableNote>().Any(n => n.IsSelected && n.NamedNote.MusicalNote == note.MusicalNote);
 
                     var playingNote = player.PlayingItem as PlayableNote;
-                    var isPlaying = playingNote is not null && playingNote.Note == note.Note;
+                    var isPlaying = playingNote is not null && playingNote.NamedNote.MusicalNote == note.MusicalNote;
 
                     var rect = e.Graphics.DrawViolinNote(new Point(posX, posY), radius, note, isInKey, isSelected, isPlaying, fingers == 0);
 
-                    violinPositions.Add(new Tuple<Rectangle, MusicalNote>(rect, note.Note));
+                    violinPositions.Add(new Tuple<Rectangle, NamedNote>(rect, note));
                 }
             }
         }
@@ -262,7 +266,7 @@ namespace ElectricFox.ViolinTutor.Ui
 
             if (selectedNote is null)
             {
-                melody.Items.Add(new PlayableNote(new NamedNote("B", 4).Note, length));
+                melody.Items.Add(new PlayableNote(new NamedNote("B", 4), length));
                 RefreshView();
             }
             else
@@ -305,23 +309,41 @@ namespace ElectricFox.ViolinTutor.Ui
                 switch (e.KeyCode)
                 {
                     case Keys.Down:
-                        note.Note = note.Note.ShiftOctaveDown();
+                        octave = note.NamedNote.Octave - 1;
+                        if (octave < 0) return;
+                        note.NamedNote = new NamedNote(note.NamedNote.Name, octave);
                         break;
                     case Keys.Up:
-                        note.Note = note.Note.ShiftOctaveUp();
+                        octave = note.NamedNote.Octave + 1;
+                        if (octave < 0) return;
+                        note.NamedNote = new NamedNote(note.NamedNote.Name, octave);
                         break;
                 }
             }
             else
             {
+                MusicalNote? nextNote = null;
                 switch (e.KeyCode)
                 {
                     case Keys.Down:
-                        note.Note++;
+                        nextNote = note.NamedNote.MusicalNote + 1;
                         break;
                     case Keys.Up:
-                        note.Note--;
+                        nextNote = note.NamedNote.MusicalNote - 1;
                         break;
+                }
+
+                if (nextNote is not null)
+                {
+                    var candidates = nextNote.GetNamedNotes();
+                    if (candidates.Any(c => this.melody.KeySignature.IsContained(nextNote)))
+                    {
+                        note.NamedNote = candidates.First(c => this.melody.KeySignature.IsContained(nextNote));
+                    }
+                    else
+                    {
+                        note.NamedNote = candidates.First();
+                    }
                 }
             }
 
@@ -344,7 +366,7 @@ namespace ElectricFox.ViolinTutor.Ui
             }
             else
             {
-                selectedNote.Note = clickedNote.Item2;
+                selectedNote.NamedNote = clickedNote.Item2;
             }
 
             RefreshView();

@@ -5,21 +5,32 @@
         private static Dictionary<(NoteValue, Accidental), int> baseValues = new()
         {
             { (NoteValue.C, Accidental.Neutral), 0 },
+
             { (NoteValue.C, Accidental.Sharp), 1 },
             { (NoteValue.D, Accidental.Flat), 1 },
+
             { (NoteValue.D, Accidental.Neutral), 2 },
+
             { (NoteValue.D, Accidental.Sharp), 3 },
             { (NoteValue.E, Accidental.Flat), 3 },
+
             { (NoteValue.E, Accidental.Neutral), 4 },
+
             { (NoteValue.F, Accidental.Neutral),5 },
+
             { (NoteValue.F, Accidental.Sharp), 6 },
             { (NoteValue.G, Accidental.Flat), 6 },
+
             { (NoteValue.G, Accidental.Neutral), 7 },
+
             { (NoteValue.G, Accidental.Sharp), 8 },
             { (NoteValue.A, Accidental.Flat), 8 },
+
             { (NoteValue.A, Accidental.Neutral), 9 },
+
             { (NoteValue.A, Accidental.Sharp), 10 },
             { (NoteValue.B, Accidental.Flat), 10 },
+
             { (NoteValue.B, Accidental.Neutral), 11 },
         };
 
@@ -37,7 +48,7 @@
             this.absoluteValue = (octave * 12) + baseValue;
         }
 
-        private static MusicalNote FromAbsoluteValue(int absoluteValue)
+        public static MusicalNote FromAbsoluteValue(int absoluteValue)
         {
             if (absoluteValue < 0 || absoluteValue >= FrequncyList.Length)
             {
@@ -62,6 +73,23 @@
                 baseValues
                 .Where(b => b.Value == baseValue)
                 .Select(b => new NamedNote(b.Key.Item1, b.Key.Item2, octave));
+        }
+
+        public NamedNote GetNoteInKey(KeySignature key)
+        {
+            var octave = absoluteValue / 12;
+
+            var baseValue = absoluteValue % 12;
+
+            var candidates = GetNamedNotes();
+            if (candidates.Any(key.IsContained))
+            {
+                return candidates.First(key.IsContained);
+            }
+            else
+            {
+                return candidates.First();
+            }
         }
 
         public MusicalNote ShiftOctaveUp()

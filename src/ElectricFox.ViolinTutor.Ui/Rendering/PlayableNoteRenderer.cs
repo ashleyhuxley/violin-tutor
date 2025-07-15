@@ -9,21 +9,21 @@ namespace ElectricFox.ViolinTutor.Ui.Rendering
         {
             var middleY = p.Y + (2 * Constants.StaveSpacing);
             var bNote = new NamedNote("B", 4);
-            var noteOffset = bNote.StavePosition - note.Note.StavePosition;
+            var noteOffset = bNote.StavePosition - note.NamedNote.StavePosition;
 
             var notePoint = new Point(p.X, middleY + (noteOffset * (Constants.StaveSpacing / 2)));
 
-            if (note.Note.StavePosition > (bNote.StavePosition + 5))
+            if (note.NamedNote.StavePosition > (bNote.StavePosition + 5))
             {
                 var y = middleY - (Constants.StaveSpacing * 3);
                 g.DrawLine(Assets.StaveLine, p.X - 10, y, p.X + 10, y);
             }
-            if (note.Note.StavePosition < (bNote.StavePosition - 5))
+            if (note.NamedNote.StavePosition < (bNote.StavePosition - 5))
             {
                 var y = middleY + (Constants.StaveSpacing * 3);
                 g.DrawLine(Assets.StaveLine, p.X - 10, y, p.X + 10, y);
             }
-            if (note.Note.StavePosition < (bNote.StavePosition - 7))
+            if (note.NamedNote.StavePosition < (bNote.StavePosition - 7))
             {
                 var y = middleY + (Constants.StaveSpacing * 4);
                 g.DrawLine(Assets.StaveLine, p.X - 10, y, p.X + 10, y);
@@ -61,10 +61,10 @@ namespace ElectricFox.ViolinTutor.Ui.Rendering
                 x += rect.Width + 5;
             }
 
-            var expectedAccidental = melody.KeySignature.GetAccidentalForNote(note.Note.Value);
-            if (expectedAccidental != note.Note.Accidental)
+            var expectedAccidental = melody.KeySignature.GetAccidentalForNote(note.NamedNote.Value);
+            if (expectedAccidental != note.NamedNote.Accidental)
             {
-                calc.Add(g.DrawAccidental(new Point(x, notePoint.Y), note.Note.Accidental, note.IsSelected, note.IsPlaying));
+                calc.Add(g.DrawAccidental(new Point(x, notePoint.Y), note.NamedNote.Accidental, note.IsSelected, note.IsPlaying));
             }
 
             return calc.Bounds;
