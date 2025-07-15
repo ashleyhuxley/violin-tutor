@@ -1,160 +1,97 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ElectricFox.ViolinTutor.Code
+﻿namespace ElectricFox.ViolinTutor.Code
 {
     public class MusicalNote
     {
         private static Dictionary<(NoteValue, Accidental), int> baseValues = new()
         {
             { (NoteValue.C, Accidental.Neutral), 0 },
-            {(NoteValue.C, Accidental.Sharp), 1 },
-            {(NoteValue.D, Accidental.Flat), 1 },
-            {(NoteValue.D, Accidental.Neutral), 2 },
-            {(NoteValue.D, Accidental.Sharp), 3 },
-            {(NoteValue.E, Accidental.Flat), 3 },
-            {(NoteValue.E, Accidental.Neutral), 4 },
-            {(NoteValue.F, Accidental.Neutral),5 },
-            {(NoteValue.F, Accidental.Sharp), 6 },
-            {(NoteValue.G, Accidental.Flat), 6 },
-            {(NoteValue.G, Accidental.Neutral), 7 },
-            {(NoteValue.G, Accidental.Sharp), 8 },
-            {(NoteValue.A, Accidental.Flat), 8 },
-            {(NoteValue.A, Accidental.Neutral), 9 },
-            {(NoteValue.A, Accidental.Sharp), 10 },
-            {(NoteValue.B, Accidental.Flat), 10 },
-            {(NoteValue.B, Accidental.Neutral), 11 },
+            { (NoteValue.C, Accidental.Sharp), 1 },
+            { (NoteValue.D, Accidental.Flat), 1 },
+            { (NoteValue.D, Accidental.Neutral), 2 },
+            { (NoteValue.D, Accidental.Sharp), 3 },
+            { (NoteValue.E, Accidental.Flat), 3 },
+            { (NoteValue.E, Accidental.Neutral), 4 },
+            { (NoteValue.F, Accidental.Neutral),5 },
+            { (NoteValue.F, Accidental.Sharp), 6 },
+            { (NoteValue.G, Accidental.Flat), 6 },
+            { (NoteValue.G, Accidental.Neutral), 7 },
+            { (NoteValue.G, Accidental.Sharp), 8 },
+            { (NoteValue.A, Accidental.Flat), 8 },
+            { (NoteValue.A, Accidental.Neutral), 9 },
+            { (NoteValue.A, Accidental.Sharp), 10 },
+            { (NoteValue.B, Accidental.Flat), 10 },
+            { (NoteValue.B, Accidental.Neutral), 11 },
         };
+
+        private int absoluteValue = 0;
+
+        public decimal Frequency => FrequncyList[this.absoluteValue];
 
         public MusicalNote()
         {
-            Value = NoteValue.C;
-            Accidental = Accidental.Neutral;
-            Octave = 4;
         }
 
         public MusicalNote(NoteValue value, Accidental accidental, int octave)
         {
-            Value = value;
-            Accidental = accidental;
-            Octave = octave;
+            var baseValue = baseValues[(value, accidental)];
+            this.absoluteValue = (octave * 12) + baseValue;
         }
 
-        public MusicalNote(string name, int octave)
+        private static MusicalNote FromAbsoluteValue(int absoluteValue)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            Value = name.ToUpperInvariant()[0] switch
-            {
-                'A' => NoteValue.A,
-                'B' => NoteValue.B,
-                'C' => NoteValue.C,
-                'D' => NoteValue.D,
-                'E' => NoteValue.E,
-                'F' => NoteValue.F,
-                'G' => NoteValue.G,
-                _ => throw new ArgumentException("Name must be a note A-G with optional # or b")
-            };
-
-            Accidental = Accidental.Neutral;
-            if (name.Length > 1)
-            {
-                Accidental = name[1] switch
-                {
-                    '#' => Accidental.Sharp,
-                    'b' => Accidental.Flat,
-                    _ => Accidental.Neutral
-                };
-            }
-
-            Octave = octave;
-        }
-
-        public NoteValue Value { get; set; }
-        public int Octave { get; set; }
-        public Accidental Accidental { get; set; }
-
-        [JsonIgnore]
-        public string Name
-        {
-            get
-            {
-                var note = Enum.GetName(typeof(NoteValue), Value);
-                var acc = Accidental switch
-                {
-                    Accidental.Sharp => "#",
-                    Accidental.Flat => "b",
-                    _ => ""
-                };
-
-                return $"{note}{acc}";
-            }
-        }
-
-        public override string ToString()
-        {
-            return Name;
-        }
-
-        [JsonIgnore]
-        public decimal Frequency => FrequncyList[this.AbsoluteValue];
-
-        [JsonIgnore]
-        public int AbsoluteValue
-        {
-            get
-            {
-                var baseValue = baseValues[(Value, Accidental)];
-                return (Octave * 12) + baseValue;
-            }
-        }
-
-        [JsonIgnore]
-        public int StavePosition => (Octave * 7) + (int)Value;
-
-        public static MusicalNote[] FromValue(int absoluteValue)
-        {
-            int octave = absoluteValue / 12;
-            int baseValue = absoluteValue % 12;
-
-            // Ensure the base value is non-negative
-            if (baseValue < 0) baseValue += 12;
-
-            // Look up the corresponding note
-            var values = baseValues.Where(b => b.Value == baseValue);
-            if (!values.Any())
+            if (absoluteValue < 0 || absoluteValue >= FrequncyList.Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(absoluteValue), "Absolute value is out of range for musical notes.");
             }
 
-            return values.Select(v => new MusicalNote
+            var note = new MusicalNote
             {
-                Value = v.Key.Item1,
-                Octave = octave,
-                Accidental = v.Key.Item2
-            }).ToArray();
+                absoluteValue = absoluteValue
+            };
+
+            return note;
+        }
+
+        public IEnumerable<NamedNote> GetNamedNotes()
+        {
+            var octave = absoluteValue / 12;
+
+            var baseValue = absoluteValue % 12;
+
+            return 
+                baseValues
+                .Where(b => b.Value == baseValue)
+                .Select(b => new NamedNote(b.Key.Item1, b.Key.Item2, octave));
+        }
+
+        public MusicalNote ShiftOctaveUp()
+        {
+            return FromAbsoluteValue(this.absoluteValue + 12);
+        }
+
+        public MusicalNote ShiftOctaveDown()
+        {
+            return FromAbsoluteValue(this.absoluteValue - 12);
         }
 
         public override bool Equals(object? obj) => obj is MusicalNote other && Equals(other);
 
-        public override int GetHashCode() => AbsoluteValue.GetHashCode();
+        public override int GetHashCode() => absoluteValue.GetHashCode();
 
         public static MusicalNote operator +(MusicalNote a, int b)
-            => FromValue(a.AbsoluteValue + b)[0];
+            => FromAbsoluteValue(a.absoluteValue + b);
         public static MusicalNote operator -(MusicalNote a, int b)
-            => FromValue(a.AbsoluteValue - b)[0];
+            => FromAbsoluteValue(a.absoluteValue - b);
         public static MusicalNote operator ++(MusicalNote a)
-            => FromValue(a.AbsoluteValue + 1)[0];
+            => FromAbsoluteValue(a.absoluteValue + 1);
         public static MusicalNote operator --(MusicalNote a)
-            => FromValue(a.AbsoluteValue - 1)[0];
+            => FromAbsoluteValue(a.absoluteValue - 1);
         public static bool operator ==(MusicalNote a, MusicalNote b)
-            => a?.Name == b?.Name && a?.Octave == b?.Octave;
+            => a.absoluteValue == b.absoluteValue;
         public static bool operator !=(MusicalNote a, MusicalNote b)
-            => a?.Name != b?.Name || a?.Octave != b?.Octave;
+            => a.absoluteValue != b.absoluteValue;
 
-        private readonly decimal[] FrequncyList = [
+        private static readonly decimal[] FrequncyList = [
             16.35m,   17.32m,   18.35m,   19.45m,   20.60m,   21.83m,   23.12m,   24.50m,   25.96m,   27.50m,   29.14m,   30.87m,
             32.70m,   34.65m,   36.71m,   38.89m,   41.20m,   43.65m,   46.25m,   49.00m,   51.91m,   55.00m,   58.27m,   61.74m,
             65.41m,   69.30m,   73.42m,   77.78m,   82.41m,   87.31m,   92.50m,   98.00m,   103.83m,  110.00m,  116.54m,  123.47m,

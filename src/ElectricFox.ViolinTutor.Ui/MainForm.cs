@@ -114,77 +114,77 @@ namespace ElectricFox.ViolinTutor.Ui
                     var radius = Math.Min((totalStringWidth / 2) - 10, fingerSpacing - 10);
 
                     var isInKey = melody.KeySignature.IsContained(note);
-                    var isSelected = melody.Items.OfType<PlayableNote>().Any(n => n.IsSelected && n.Note == note);
+                    var isSelected = melody.Items.OfType<PlayableNote>().Any(n => n.IsSelected && n.Note == note.Note);
 
                     var playingNote = player.PlayingItem as PlayableNote;
-                    var isPlaying = playingNote is not null && playingNote.Note == note;
+                    var isPlaying = playingNote is not null && playingNote.Note == note.Note;
 
                     var rect = e.Graphics.DrawViolinNote(new Point(posX, posY), radius, note, isInKey, isSelected, isPlaying, fingers == 0);
 
-                    violinPositions.Add(new Tuple<Rectangle, MusicalNote>(rect, note));
+                    violinPositions.Add(new Tuple<Rectangle, MusicalNote>(rect, note.Note));
                 }
             }
         }
 
-        private static MusicalNote GetNote(int x, int y)
+        private static NamedNote GetNote(int x, int y)
         {
             switch (x)
             {
                 case 0:
                     switch (y)
                     {
-                        case 0: return new MusicalNote("G", 3);
-                        case 1: return new MusicalNote("G#", 3);
-                        case 2: return new MusicalNote("A", 3);
-                        case 3: return new MusicalNote("A#", 3);
-                        case 4: return new MusicalNote("B", 3);
-                        case 5: return new MusicalNote("C", 4);
-                        case 6: return new MusicalNote("C#", 4);
-                        case 7: return new MusicalNote("D", 4);
+                        case 0: return new NamedNote("G", 3);
+                        case 1: return new NamedNote("G#", 3);
+                        case 2: return new NamedNote("A", 3);
+                        case 3: return new NamedNote("A#", 3);
+                        case 4: return new NamedNote("B", 3);
+                        case 5: return new NamedNote("C", 4);
+                        case 6: return new NamedNote("C#", 4);
+                        case 7: return new NamedNote("D", 4);
                     }
                     break;
                 case 1:
                     switch (y)
                     {
-                        case 0: return new MusicalNote("D", 4);
-                        case 1: return new MusicalNote("D#", 4);
-                        case 2: return new MusicalNote("E", 4);
-                        case 3: return new MusicalNote("F", 4);
-                        case 4: return new MusicalNote("F#", 4);
-                        case 5: return new MusicalNote("G", 4);
-                        case 6: return new MusicalNote("G#", 4);
-                        case 7: return new MusicalNote("A", 4);
+                        case 0: return new NamedNote("D", 4);
+                        case 1: return new NamedNote("D#", 4);
+                        case 2: return new NamedNote("E", 4);
+                        case 3: return new NamedNote("F", 4);
+                        case 4: return new NamedNote("F#", 4);
+                        case 5: return new NamedNote("G", 4);
+                        case 6: return new NamedNote("G#", 4);
+                        case 7: return new NamedNote("A", 4);
                     }
                     break;
                 case 2:
                     switch (y)
                     {
-                        case 0: return new MusicalNote("A", 4);
-                        case 1: return new MusicalNote("A#", 4);
-                        case 2: return new MusicalNote("B", 4);
-                        case 3: return new MusicalNote("C", 5);
-                        case 4: return new MusicalNote("C#", 5);
-                        case 5: return new MusicalNote("D", 5);
-                        case 6: return new MusicalNote("D#", 5);
-                        case 7: return new MusicalNote("E", 5);
+                        case 0: return new NamedNote("A", 4);
+                        case 1: return new NamedNote("A#", 4);
+                        case 2: return new NamedNote("B", 4);
+                        case 3: return new NamedNote("C", 5);
+                        case 4: return new NamedNote("C#", 5);
+                        case 5: return new NamedNote("D", 5);
+                        case 6: return new NamedNote("D#", 5);
+                        case 7: return new NamedNote("E", 5);
                     }
                     break;
                 case 3:
                     switch (y)
                     {
-                        case 0: return new MusicalNote("E", 5);
-                        case 1: return new MusicalNote("F", 5);
-                        case 2: return new MusicalNote("F#", 5);
-                        case 3: return new MusicalNote("G", 5);
-                        case 4: return new MusicalNote("G#", 5);
-                        case 5: return new MusicalNote("A", 5);
-                        case 6: return new MusicalNote("A#", 5);
-                        case 7: return new MusicalNote("B", 5);
+                        case 0: return new NamedNote("E", 5);
+                        case 1: return new NamedNote("F", 5);
+                        case 2: return new NamedNote("F#", 5);
+                        case 3: return new NamedNote("G", 5);
+                        case 4: return new NamedNote("G#", 5);
+                        case 5: return new NamedNote("A", 5);
+                        case 6: return new NamedNote("A#", 5);
+                        case 7: return new NamedNote("B", 5);
                     }
                     break;
             }
 
-            return new MusicalNote("C", 0);
+            return new NamedNote("C", 0);
         }
 
         private void ViolinLayoutResize(object sender, EventArgs e)
@@ -262,7 +262,7 @@ namespace ElectricFox.ViolinTutor.Ui
 
             if (selectedNote is null)
             {
-                melody.Items.Add(new PlayableNote(new MusicalNote("B", 4), length));
+                melody.Items.Add(new PlayableNote(new NamedNote("B", 4).Note, length));
                 RefreshView();
             }
             else
@@ -305,14 +305,10 @@ namespace ElectricFox.ViolinTutor.Ui
                 switch (e.KeyCode)
                 {
                     case Keys.Down:
-                        octave = note.Note.Octave - 1;
-                        if (octave < 0) return;
-                        note.Note = new MusicalNote(note.Note.Name, octave);
+                        note.Note = note.Note.ShiftOctaveDown();
                         break;
                     case Keys.Up:
-                        octave = note.Note.Octave + 1;
-                        if (octave < 0) return;
-                        note.Note = new MusicalNote(note.Note.Name, octave);
+                        note.Note = note.Note.ShiftOctaveUp();
                         break;
                 }
             }
@@ -339,8 +335,6 @@ namespace ElectricFox.ViolinTutor.Ui
             {
                 return;
             }
-
-            Debug.WriteLine($"{clickedNote.Item2.Name} {clickedNote.Item2.Octave}");
 
             var selectedNote = melody.Items.FirstOrDefault(i => i.IsSelected) as PlayableNote;
 

@@ -37,16 +37,16 @@
 
         public KeySignature() { }
 
-        public MusicalNote Adjust(MusicalNote note)
+        public NamedNote Adjust(NamedNote note)
         {
             var baseNote = note.Name[0];
             if (Sharps.Contains(baseNote))
             {
-                return new MusicalNote(baseNote + "#", note.Octave);
+                return new NamedNote(baseNote + "#", note.Octave);
             }
             else if (Flats.Contains(baseNote))
             {
-                return new MusicalNote(baseNote + "b", note.Octave);
+                return new NamedNote(baseNote + "b", note.Octave);
             }
 
             return note;
@@ -76,23 +76,24 @@
 
         public bool IsContained(MusicalNote note)
         {
-            var name = Enum.GetName(typeof(NoteValue), note.Value);
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Could not get the name of the note");
-            }
+            return note.GetNamedNotes().Any(IsContained);
+        }
 
-            switch (note.Accidental)
+        public bool IsContained(NamedNote note)
+        {
+            var name = note.Name[0];
+            if (Sharps.Contains(name))
             {
-                case Accidental.Neutral:
-                    return !Sharps.Contains(name[0]) && !Flats.Contains(name[0]);
-                case Accidental.Sharp:
-                    return Sharps.Contains(name[0]);
-                case Accidental.Flat:
-                    return Flats.Contains(name[0]);
+                return note.Accidental == Accidental.Sharp;
             }
-
-            return false;
+            else if (Flats.Contains(name))
+            {
+                return note.Accidental == Accidental.Flat;
+            }
+            else
+            {
+                return note.Accidental == Accidental.Neutral;
+            }
         }
 
         public override string ToString()

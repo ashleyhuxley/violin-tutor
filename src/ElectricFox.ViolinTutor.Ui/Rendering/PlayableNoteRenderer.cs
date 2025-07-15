@@ -8,7 +8,7 @@ namespace ElectricFox.ViolinTutor.Ui.Rendering
         public Rectangle Render(Graphics g, Point p, PlayableNote note, Melody melody)
         {
             var middleY = p.Y + (2 * Constants.StaveSpacing);
-            var bNote = new MusicalNote("B", 4);
+            var bNote = new NamedNote("B", 4);
             var noteOffset = bNote.StavePosition - note.Note.StavePosition;
 
             var notePoint = new Point(p.X, middleY + (noteOffset * (Constants.StaveSpacing / 2)));

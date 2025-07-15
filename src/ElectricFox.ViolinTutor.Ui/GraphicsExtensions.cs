@@ -219,7 +219,7 @@ public static class GraphicsExtensions
         this Graphics g, 
         Point p, 
         int radius, 
-        MusicalNote note, 
+        NamedNote note, 
         bool isInKey, 
         bool isSelected,
         bool isPlaying, 
