@@ -61,7 +61,7 @@ namespace ElectricFox.ViolinTutor.Ui.Rendering
                 x += rect.Width + 5;
             }
 
-            var expectedAccidental = melody.KeySignature.GetAccidentalForNote(note.NamedNote.Value);
+            var expectedAccidental = melody.Items.OfType<KeySignature>().FirstOrDefault(KeySignature.C).GetAccidentalForNote(note.NamedNote.Value);
             if (expectedAccidental != note.NamedNote.Accidental)
             {
                 calc.Add(g.DrawAccidental(new Point(x, notePoint.Y), note.NamedNote.Accidental, note.IsSelected, note.IsPlaying));

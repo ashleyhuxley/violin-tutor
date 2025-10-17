@@ -19,10 +19,6 @@ namespace ElectricFox.ViolinTutor.Code
 
         public List<NotationItem> Items { get; set; } = [];
 
-        public KeySignature KeySignature { get; set; } = KeySignature.C;
-
-        public TimeSignature TimeSignature { get; set; } = new TimeSignature(4, 4);
-
         [JsonIgnore]
         public Dictionary<NotationItem, Rectangle> Bounds { get; set; } = [];
 

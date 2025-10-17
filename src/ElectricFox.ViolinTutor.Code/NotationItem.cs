@@ -8,6 +8,7 @@ namespace ElectricFox.ViolinTutor.Code
     [JsonDerivedType(typeof(Rest), typeDiscriminator: "rest")]
     [JsonDerivedType(typeof(TimeSignature), typeDiscriminator: "time")]
     [JsonDerivedType(typeof(NewLine), typeDiscriminator: "newline")]
+    [JsonDerivedType(typeof(Clef), typeDiscriminator: "clef")]
     public abstract class NotationItem
     {
         [JsonIgnore]

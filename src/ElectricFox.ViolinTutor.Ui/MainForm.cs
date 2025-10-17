@@ -22,6 +22,7 @@ namespace ElectricFox.ViolinTutor.Ui
             RendererFactory.RegisterRenderer(new PlayableNoteRenderer());
             RendererFactory.RegisterRenderer(new RestRenderer());
             RendererFactory.RegisterRenderer(new ClefRenderer());
+            RendererFactory.RegisterRenderer(new KeySignatureRenderer());
 
             FillKeySigs();
 
@@ -69,7 +70,9 @@ namespace ElectricFox.ViolinTutor.Ui
                 return;
             }
 
-            melody.KeySignature = key;
+            melody.Items.RemoveAll(i => i is KeySignature);
+            var position = melody.Items.IndexOf(melody.Items.OfType<TimeSignature>().First());
+            melody.Items.Insert(position + 1, key);
 
             RefreshView();
         }
@@ -112,12 +115,12 @@ namespace ElectricFox.ViolinTutor.Ui
 
                     //var note = GetNote(x, fingers);
                     var baseNote = MusicalNote.FromAbsoluteValue(absoluteValue);
-                    var note = baseNote.GetNoteInKey(melody.KeySignature);
+                    var note = baseNote.GetNoteInKey(melody.Items.OfType<KeySignature>().FirstOrDefault(KeySignature.C));
 
                     var posY = margin + (fingerSpace * fingers) + fingerSpacing;
                     var radius = Math.Min((totalStringWidth / 2) - 10, fingerSpacing - 10);
 
-                    var isInKey = melody.KeySignature.IsContained(note);
+                    var isInKey = melody.Items.OfType<KeySignature>().FirstOrDefault(KeySignature.C).IsContained(note);
                     var isSelected = melody.Items.OfType<PlayableNote>().Any(n => n.IsSelected && n.NamedNote.MusicalNote == note.MusicalNote);
 
                     var playingNote = player.PlayingItem as PlayableNote;
@@ -336,9 +339,9 @@ namespace ElectricFox.ViolinTutor.Ui
                 if (nextNote is not null)
                 {
                     var candidates = nextNote.GetNamedNotes();
-                    if (candidates.Any(c => this.melody.KeySignature.IsContained(nextNote)))
+                    if (candidates.Any(c => this.melody.Items.OfType<KeySignature>().First().IsContained(nextNote)))
                     {
-                        note.NamedNote = candidates.First(c => this.melody.KeySignature.IsContained(nextNote));
+                        note.NamedNote = candidates.First(c => this.melody.Items.OfType<KeySignature>().First().IsContained(nextNote));
                     }
                     else
                     {

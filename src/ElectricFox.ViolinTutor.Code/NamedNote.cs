@@ -4,6 +4,7 @@ namespace ElectricFox.ViolinTutor.Code
 {
     public class NamedNote
     {
+        [JsonIgnore]
         public MusicalNote MusicalNote { get; private set; }
 
         public NoteValue Value { get; set; }
